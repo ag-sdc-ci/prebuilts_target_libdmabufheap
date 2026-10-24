@@ -1,0 +1,33 @@
+shadow prebuilt repo: libdmabufheap (target)
+  upstream: system/memory/libdmabufheap
+  api-level: 34 payload (branch 34-20261024)
+  blobs: org.blisslabs.ag.libdmabufheap.apex + org.blisslabs.ag.libdmabufheap.dev.apex
+    @ 14000001 (pkgver 14.0.0_r67-1; extracted; blobs deleted, not tracked)
+  recipe: apex/libdmabufheap @ 82a035423c4043c7ffc2b918e3a5e636dab1d558 (main,
+    local, NOT pushed - runner down); built with local makeapex in ag-build
+    (API=34 LEVEL=v3 makeapex -f -C -m, user builder, 2026-10-24); depends on
+    sibling apex/libion payload (static libion.a + ion/kernel-headers) and
+    /apex ext-libbase payload (static libbase.a + android-base headers)
+  source pin: AOSP tag android-14.0.0_r67 = 5adc1d62 (EXACT los-21 match;
+    los-21 checkout is the pristine tag - zero divergence, no LOS-only modules;
+    NOTE the repo android14-release branch DIVERGES from the tag: drops
+    recovery_available and edits BufferAllocator headers - hence tag pin)
+  layout: flattened root (payload contents at repo root)
+  modules: libdmabufheap (cc_prebuilt_library, unified shared
+    lib/libdmabufheap.so + static lib/libdmabufheap.a)
+  notes: source also defines dmabufheap-unit-tests, dmabufheap-unit-tests-default,
+    dmabufheap-vts-unit-tests, dmabufheaptest, dmabuf-heap-bench (tests/bench,
+    tests/ subdir) - all dropped. Mirrors source recovery_available,
+    vendor_available, vndk{enabled,support_system_process}, double_loadable,
+    apex_available platform+anyapex, min_sdk_version 29; host_supported and
+    product_available removed (source lacks both). Per source static_libs
+    libbase+libion are embedded STATICALLY in the payload .so - DT_NEEDED is
+    only liblog/libc++_shared/libm/libdl/libc (no libion.so / libbase.so
+    dependency). NDK r30 build: libc++_shared.so provided by com.android.runtime
+    on device. In-tree consumers confirmed: prebuilts/target/external/minigbm
+    (shared_libs) and prebuilts/target/framework/.../codec2/vndk
+    (shared_libs + export_shared_lib_headers) - both resolve against this
+    prebuilt with prefer:true. Coexistence: prebuilts/vndk/v34* keeps
+    vndk_prebuilt_shared "libdmabufheap" (libpng precedent). Dummies and
+    linker.config.json filtered.
+  date: 2026-10-24
